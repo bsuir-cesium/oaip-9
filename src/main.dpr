@@ -18,6 +18,7 @@ type
   end;
 
   TArr = array [1 .. len_array] of TRecord;
+  TIndexes = array of integer;
 
 procedure GetRandomArr(var arr: TArr);
 var
@@ -35,9 +36,12 @@ procedure PrintArray(const arr: TArr);
 var
   i: integer;
 begin
-  for i := 1 to len_array do
-    write('(value: ', arr[i].value, ', name: ', arr[i].name, ') ');
-  writeln;
+    writeln('------====== Array start ======------');
+    for i := 1 to len_array do
+        write('(value: ', arr[i].value, ', name: ', arr[i].name, ') ');
+    writeln;
+    writeln('------====== Array end ======------');
+    writeln;
 end;
 
 procedure Sort(var arr: TArr; byName: boolean);
@@ -124,9 +128,66 @@ begin
   end;
 end;
 
+// function BinSearchByValue(const arr: TArr; const value: integer;
+//   leftIndex, rightIndex: integer; var counter: integer): TArrSearch;
+// var
+//   middleIndex, i, j: integer;
+//   search: boolean;
+//   resultArray: TArrSearch;
+// begin
+//   search := True;
+//   while search do
+//   begin
+//     counter := counter + 1;
+//     if leftIndex > rightIndex then
+//     begin
+//       setLength(resultArray, 1);
+//       resultArray[0] := -1;
+//       search := False;
+//     end
+//     else
+//     begin
+//       middleIndex := (leftIndex + rightIndex) div 2;
+//       if arr[middleIndex].value = value then
+//       begin
+//         i := middleIndex;
+//         j := 1;
+//         while (search) do
+//           if arr[i].value = value then
+//           begin
+//             setLength(resultArray, j);
+//             resultArray[j-1] := i;
+//             Inc(i);
+//             Inc(j);
+//           end
+//           else
+//             search := False;
+//         search := True;
+//         i := middleIndex;
+//         while (search) do
+//           if arr[i].value = value then
+//           begin
+//             setLength(resultArray, i);
+//             resultArray[j-1] := arr[i];
+//             Dec(i);
+//             Inc(j);
+//           end
+//           else
+//             search := False;
+//       end
+//       else if arr[middleIndex].value < value then
+//         leftIndex := middleIndex + 1
+//       else
+//         rightIndex := middleIndex;
+//     end;
+//   end;
+//   BinSearchByValue := resultArray;
+// end;
+
 var
   arr: TArr;
-  index, counter: integer;
+  indexes: TIndexes;
+  index, counter, searchValue, i: integer;
   searchString: string;
   searchFlag: boolean;
 
@@ -149,11 +210,33 @@ begin
     begin
       writeln('(index: ', index, ', value: ', arr[index].value, ', name: ',
         arr[index].name, ', counter: ', counter, ')');
+      writeln;
       searchFlag := False;
     end;
   end;
 
+  Sort(arr, False);
+  PrintArray(arr);
 
+  // searchFlag := True;
+  // while searchFlag do
+  // begin
+  //   write('Enter search string: ');
+  //   readln(searchValue);
+  //   counter := 0;
+  //   indexes := BinSearchByValue(arr, searchValue, 1, len_array, counter);
+  //   if (indexes[0] = -1) then
+  //     writeln('Not found, try again')
+  //   else
+  //   begin
+  //     for i := low(indexes) to high(indexes) do
+  //       writeln('value: ', arr[i].value, ', name: ',
+  //         arr[i].name, ')');
+  //     writeln;
+  //     searchFlag := False;
+  //   end;
+  // end;
+  
 
   readln;
 
