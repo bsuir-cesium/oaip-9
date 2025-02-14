@@ -1,6 +1,6 @@
 program main;
 
-{$mode DELPHI}
+// {$mode DELPHI}
 {$APPTYPE CONSOLE}
 
 uses
@@ -54,14 +54,16 @@ begin
   while firstIndex < lastIndex do
   begin
     for i := firstIndex to lastIndex - 1 do
-      if ((arr[i].name > arr[i + 1].name) and byName) or ((arr[i].value > arr[i + 1].value) and not byName) then
+      if ((arr[i].name > arr[i + 1].name) and byName) or
+        ((arr[i].value > arr[i + 1].value) and not byName) then
       begin
         tempValue := arr[i];
         arr[i] := arr[i + 1];
         arr[i + 1] := tempValue;
       end;
     for i := lastIndex downto firstIndex + 1 do
-      if ((arr[i].name < arr[i - 1].name) and byName) or ((arr[i].value < arr[i - 1].value) and not byName) then
+      if ((arr[i].name < arr[i - 1].name) and byName) or
+        ((arr[i].value < arr[i - 1].value) and not byName) then
       begin
         tempValue := arr[i];
         arr[i] := arr[i - 1];
@@ -69,11 +71,12 @@ begin
       end;
     firstIndex := firstIndex + 1;
     lastIndex := lastIndex - 1;
-    end;
+  end;
 end;
 
-function BinSearch(const arr: TArr; const criteria: Variant;
-  leftIndex, rightIndex: integer; var counter: integer; const byName: boolean): integer;
+function BinSearch(const arr: TArr; const key: Variant;
+  leftIndex, rightIndex: integer; var counter: integer;
+  const byName: boolean): integer;
 var
   middleIndex: integer;
   search: boolean;
@@ -82,92 +85,55 @@ begin
   while search do
   begin
     counter := counter + 1;
-    if (leftIndex = rightIndex) and (((arr[leftIndex].name <> criteria) and byName)
-      or ((arr[leftIndex].value <> criteria) and not byName)) then
+    if byName then
     begin
-      BinSearch := -1;
-      search := False;
-    end
-    else
-    begin
-      middleIndex := (leftIndex + rightIndex) div 2;
-      if ((arr[middleIndex].name = criteria) and byName) or ((arr[middleIndex].value = criteria) and not byName) then
+      if (leftIndex = rightIndex) and (arr[leftIndex].name <> key) then
       begin
-        BinSearch := middleIndex;
+        BinSearch := -1;
         search := False;
       end
-      else if ((arr[middleIndex].name < criteria) and byName) or ((arr[middleIndex].value < criteria) and not byName) then
-        leftIndex := middleIndex + 1
       else
-        rightIndex := middleIndex;
-    end;
-  end;
-end;
-
-function BinSearchByValue(const arr: TArr; const value: integer;
-  leftIndex, rightIndex: integer; var counter: integer): TIndexes;
-var
-  middleIndex, i, j, min, max: integer;
-  search: boolean;
-  resultArray: TIndexes;
-begin
-  min := leftIndex;
-  max := rightIndex;
-  search := True;
-  while search do
-  begin
-    counter := counter + 1;
-    if (leftIndex = rightIndex) and (arr[leftIndex].value <> value) then
-    begin
-      setLength(resultArray, 1);
-      resultArray[0] := -1;
-      search := False;
+      begin
+        middleIndex := (leftIndex + rightIndex) div 2;
+        if arr[middleIndex].name = key then
+        begin
+          BinSearch := middleIndex;
+          search := False;
+        end
+        else if arr[middleIndex].name < key then
+          leftIndex := middleIndex + 1
+        else
+          rightIndex := middleIndex;
+      end;
     end
     else
     begin
-      middleIndex := (leftIndex + rightIndex) div 2;
-      if arr[middleIndex].value = value then
+      if (leftIndex = rightIndex) and (arr[leftIndex].value <> key) then
       begin
-        setLength(resultArray, 1);
-        resultArray[0] := middleIndex;
-        i := middleIndex + 1;
-        j := 2;
-        while (search) and (i <= max) do
-          if arr[i].value = value then
-          begin
-            setLength(resultArray, j);
-            resultArray[j - 1] := i;
-            Inc(i);
-            Inc(j);
-          end
-          else
-            search := False;
-        search := True;
-        i := middleIndex - 1;
-        while (search) and (i >= min) do
-          if arr[i].value = value then
-          begin
-            setLength(resultArray, i);
-            resultArray[j - 1] := i;
-            Dec(i);
-            Inc(j);
-          end
-          else
-            search := False;
+        BinSearch := -1;
+        search := False;
       end
-      else if arr[middleIndex].value < value then
-        leftIndex := middleIndex + 1
       else
-        rightIndex := middleIndex;
+      begin
+        middleIndex := (leftIndex + rightIndex) div 2;
+        if arr[middleIndex].value = key then
+        begin
+          BinSearch := middleIndex;
+          search := False;
+        end
+        else if arr[middleIndex].value < key then
+          leftIndex := middleIndex + 1
+        else
+          rightIndex := middleIndex;
+      end;
     end;
   end;
-  BinSearchByValue := resultArray;
 end;
 
 var
   arr: TArr;
   indexes: TIndexes;
-  index, counter, searchValue, i, j: integer;
+  index, counter, searchValue, i, len: integer;
   searchString: string;
   searchFlag: boolean;
 
@@ -202,55 +168,56 @@ begin
   searchFlag := True;
   while searchFlag do
   begin
-      write('Enter search value: ');
-      readln(searchValue);
-      index := BinSearch(arr, searchValue, 1, len_array, counter, False);
+    write('Enter search value: ');
+    readln(searchValue);
+    index := BinSearch(arr, searchValue, 1, len_array, counter, False);
 
-      if (index = -1) then
-      begin
-        writeln('Not found, try again')
-      end
-      else
-      begin
-        setLength(indexes, 1);
-        indexes[0] := index;
+    if (index = -1) then
+    begin
+      writeln('Not found, try again')
+    end
+    else
+    begin
+      setLength(indexes, 1);
+      indexes[0] := index;
 
-        i := index + 1;
-        j := 2;
-        while (searchFlag) and (i <= len_array) do
-          if arr[i].value = searchValue then
-          begin
-            setLength(indexes, j);
-            indexes[j - 1] := i;
-            Inc(i);
-            Inc(counter);
-            Inc(j);
-          end
-          else
-            searchFlag := False;
-        
-        searchFlag := True;
-        i := index - 1;
-        while (searchFlag) and (i >= 1) do
-          if arr[i].value = searchValue then
-          begin
-            setLength(indexes, i);
-            indexes[j - 1] := i;
-            Dec(i);
-            Inc(counter);
-            Inc(j);
-          end
-          else
-            searchFlag := False;
+      i := index + 1;
+      len := 2;
+      while (searchFlag) and (i <= len_array) do
+        if arr[i].value = searchValue then
+        begin
+          setLength(indexes, len);
+          indexes[len - 1] := i;
+          Inc(i);
+          Inc(counter);
+          Inc(len);
+        end
+        else
+          searchFlag := False;
 
-        searchFlag := False;
-      end;
+      searchFlag := True;
+      i := index - 1;
+      while (searchFlag) and (i >= 1) do
+        if arr[i].value = searchValue then
+        begin
+          setLength(indexes, i);
+          indexes[len - 1] := i;
+          Dec(i);
+          Inc(counter);
+          Inc(len);
+        end
+        else
+          searchFlag := False;
+
+      searchFlag := False;
+    end;
   end;
 
-  for i := Low(indexes) to High(indexes) do
+  for i := 0 to len - 2 do
   begin
-    writeln('(index: ', indexes[i], ', value: ', arr[indexes[i]].value, ', name: ',
-        arr[indexes[i]].name, ', counter: ', counter, ')');
+    writeln('(index: ', indexes[i], ', value: ', arr[indexes[i]].value,
+      ', name: ', arr[indexes[i]].name, ', counter: ', counter, ')');
   end;
   readln;
+
 end.
