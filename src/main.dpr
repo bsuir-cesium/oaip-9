@@ -133,7 +133,7 @@ end;
 var
   arr: TArr;
   indexes: TIndexes;
-  index, counter, searchValue, i, len: integer;
+  index, counter, searchValue, i, len, min, max: integer;
   searchString: string;
   searchFlag: boolean;
 
@@ -156,11 +156,12 @@ begin
     begin
       writeln('(index: ', index, ', value: ', arr[index].value, ', name: ',
         arr[index].name, ', counter: ', counter, ')');
-      writeln('Press Enter...');
-      readln;
       searchFlag := False;
     end;
   end;
+
+  writeln('Press Enter...');
+  readln;
 
   Sort(arr, False);
   PrintArray(arr);
@@ -218,6 +219,76 @@ begin
     writeln('(index: ', indexes[i], ', value: ', arr[indexes[i]].value,
       ', name: ', arr[indexes[i]].name, ', counter: ', counter, ')');
   end;
+
+  writeln('Press Enter...');
+  readln;
+
+  searchFlag := True;
+  while searchFlag do
+  begin
+    write('Enter min board: ');
+    readln(min);
+    write('Enter max board: ');
+    readln(max);
+    if (min > max) or (min = max) or (min < 1) or (max < 1) or
+      (min > random_range) or (max > random_range) then
+      writeln('Enter valid values!')
+    else
+    begin
+      i := min;
+      while searchFlag and (i <= max) do
+      begin
+        index := BinSearch(arr, i, 1, len_array, counter, False);
+
+        if (index = -1) then
+          Inc(i)
+        else
+        begin
+          indexes := nil;
+          setLength(indexes, 1);
+          indexes[0] := index;
+
+          i := index + 1;
+          len := 2;
+          while (searchFlag) and (i <= len_array) do
+            if (arr[i].value <= max) then
+            begin
+              setLength(indexes, len);
+              indexes[len - 1] := i;
+              Inc(i);
+              Inc(counter);
+              Inc(len);
+            end
+            else
+              searchFlag := False;
+
+          searchFlag := True;
+          i := index - 1;
+          while (searchFlag) and (i >= 1) do
+            if (arr[i].value >= min) then
+            begin
+              setLength(indexes, i);
+              indexes[len - 1] := i;
+              Dec(i);
+              Inc(counter);
+              Inc(len);
+            end
+            else
+              searchFlag := False;
+
+          searchFlag := False;
+        end;
+      end;
+    end;
+  end;
+
+  for i := 0 to len - 2 do
+  begin
+    writeln('(index: ', indexes[i], ', value: ', arr[indexes[i]].value,
+      ', name: ', arr[indexes[i]].name, ', counter: ', counter, ')');
+  end;
+
+  writeln('Press Enter to exit...');
   readln;
 
 end.
