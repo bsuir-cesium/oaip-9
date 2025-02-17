@@ -81,6 +81,7 @@ var
   middleIndex: integer;
   search: boolean;
 begin
+  BinSearch := -1;
   search := True;
   while search do
   begin
@@ -88,16 +89,13 @@ begin
     if byName then
     begin
       if (leftIndex = rightIndex) and (arr[leftIndex].name <> key) then
-      begin
-        BinSearch := -1;
-        search := False;
-      end
+        search := False
       else
       begin
         middleIndex := (leftIndex + rightIndex) div 2;
         if arr[middleIndex].name = key then
         begin
-          BinSearch := middleIndex;
+          Result := middleIndex;
           search := False;
         end
         else if arr[middleIndex].name < key then
@@ -109,16 +107,13 @@ begin
     else
     begin
       if (leftIndex = rightIndex) and (arr[leftIndex].value <> key) then
-      begin
-        BinSearch := -1;
-        search := False;
-      end
+        search := False
       else
       begin
         middleIndex := (leftIndex + rightIndex) div 2;
         if arr[middleIndex].value = key then
         begin
-          BinSearch := middleIndex;
+          Result := middleIndex;
           search := False;
         end
         else if arr[middleIndex].value < key then
@@ -126,6 +121,85 @@ begin
         else
           rightIndex := middleIndex;
       end;
+    end;
+  end;
+end;
+
+function BlockSearch(const arr: TArr; const key: Variant;
+  leftIndex, rightIndex: integer; var counter: integer;
+  const byName: boolean): integer;
+var
+  blockSize, blockStart, blockEnd, i: integer;
+  found, blockSearchFinished, linearSearchFinished: boolean;
+
+begin
+  Result := -1;
+  counter := 0;
+  found := False;
+  blockSearchFinished := False;
+  linearSearchFinished := False;
+
+  blockSize := Trunc(Sqrt(rightIndex - leftIndex + 1));
+
+  blockStart := leftIndex;
+  while (blockStart <= rightIndex) and not blockSearchFinished do
+  begin
+    blockEnd := blockStart + blockSize - 1;
+    if blockEnd > rightIndex then
+      blockEnd := rightIndex;
+
+    Inc(counter);
+
+    if byName then
+    begin
+      if arr[blockEnd].name >= key then
+      begin
+        i := blockStart;
+        linearSearchFinished := False;
+        while (i <= blockEnd) and not linearSearchFinished do
+        begin
+          Inc(counter);
+          if arr[i].name = key then
+          begin
+            Result := i;
+            found := True;
+            linearSearchFinished := True;
+            blockSearchFinished := True;
+          end
+          else
+            Inc(i);
+        end;
+        if not found then
+          blockSearchFinished := True;
+      end;
+    end
+    else
+    begin
+      if arr[blockEnd].value >= key then
+      begin
+        i := blockStart;
+        linearSearchFinished := False;
+        while (i <= blockEnd) and not linearSearchFinished do
+        begin
+          Inc(counter);
+          if arr[i].value = key then
+          begin
+            Result := i;
+            found := True;
+            linearSearchFinished := True;
+            blockSearchFinished := True;
+          end
+          else
+            Inc(i);
+        end;
+        if not found then
+          blockSearchFinished := True;
+      end;
+    end;
+
+    if not blockSearchFinished then
+    begin
+      blockStart := blockEnd + 1;
     end;
   end;
 end;
@@ -220,6 +294,8 @@ begin
       ', name: ', arr[indexes[i]].name, ', counter: ', counter, ')');
   end;
 
+  index := BlockSearch(arr, 300, 1, len_array, counter, False);
+  writeln('BlockSearch: ', index);
   writeln('Press Enter...');
   readln;
 
