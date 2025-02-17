@@ -131,7 +131,6 @@ function BlockSearch(const arr: TArr; const key: Variant;
 var
   blockSize, blockStart, blockEnd, i: integer;
   found, blockSearchFinished, linearSearchFinished: boolean;
-
 begin
   Result := -1;
   counter := 0;
@@ -204,6 +203,46 @@ begin
   end;
 end;
 
+procedure GetNearIndexes(const arr: TArr; const index, min, max: integer;
+  var indexes: TIndexes; var len, counter: integer);
+var
+  i: integer;
+  searchFlag: boolean;
+begin
+  searchFlag := True;
+  indexes := nil;
+  len := 1;
+  setLength(indexes, len);
+  indexes[0] := index;
+
+  i := index + 1;
+  while (searchFlag) and (i <= len_array) do
+    if (arr[i].value <= max) then
+    begin
+      Inc(len);
+      setLength(indexes, len);
+      indexes[len - 1] := i;
+      Inc(i);
+      Inc(counter);
+    end
+    else
+      searchFlag := False;
+
+  searchFlag := True;
+  i := index - 1;
+  while (searchFlag) and (i >= 1) do
+    if (arr[i].value >= min) then
+    begin
+      Inc(len);
+      setLength(indexes, len);
+      indexes[len - 1] := i;
+      Dec(i);
+      Inc(counter);
+    end
+    else
+      searchFlag := False;
+end;
+
 var
   arr: TArr;
   indexes: TIndexes;
@@ -253,49 +292,20 @@ begin
     end
     else
     begin
-      setLength(indexes, 1);
-      indexes[0] := index;
+      GetNearIndexes(arr, index, searchValue, searchValue, indexes, len, counter);
 
-      i := index + 1;
-      len := 2;
-      while (searchFlag) and (i <= len_array) do
-        if arr[i].value = searchValue then
-        begin
-          setLength(indexes, len);
-          indexes[len - 1] := i;
-          Inc(i);
-          Inc(counter);
-          Inc(len);
-        end
-        else
-          searchFlag := False;
-
-      searchFlag := True;
-      i := index - 1;
-      while (searchFlag) and (i >= 1) do
-        if arr[i].value = searchValue then
-        begin
-          setLength(indexes, i);
-          indexes[len - 1] := i;
-          Dec(i);
-          Inc(counter);
-          Inc(len);
-        end
-        else
-          searchFlag := False;
+      for i := 0 to len - 1 do
+      begin
+        writeln('(index: ', indexes[i], ', value: ', arr[indexes[i]].value,
+        ', name: ', arr[indexes[i]].name, ', counter: ', counter, ')');
+      end;
 
       searchFlag := False;
     end;
   end;
 
-  for i := 0 to len - 2 do
-  begin
-    writeln('(index: ', indexes[i], ', value: ', arr[indexes[i]].value,
-      ', name: ', arr[indexes[i]].name, ', counter: ', counter, ')');
-  end;
-
-  index := BlockSearch(arr, 300, 1, len_array, counter, False);
-  writeln('BlockSearch: ', index);
+//  index := BlockSearch(arr, 300, 1, len_array, counter, False);
+//  writeln('BlockSearch: ', index);
   writeln('Press Enter...');
   readln;
 
@@ -311,57 +321,17 @@ begin
       writeln('Enter valid values!')
     else
     begin
-      i := min;
-      while searchFlag and (i <= max) do
+      index := BinSearch(arr, min, 1, len_array, counter, False);
+      GetNearIndexes(arr, index, min, max, indexes, len, counter);
+
+      for i := 0 to len - 1 do
       begin
-        index := BinSearch(arr, i, 1, len_array, counter, False);
-
-        if (index = -1) then
-          Inc(i)
-        else
-        begin
-          indexes := nil;
-          setLength(indexes, 1);
-          indexes[0] := index;
-
-          i := index + 1;
-          len := 2;
-          while (searchFlag) and (i <= len_array) do
-            if (arr[i].value <= max) then
-            begin
-              setLength(indexes, len);
-              indexes[len - 1] := i;
-              Inc(i);
-              Inc(counter);
-              Inc(len);
-            end
-            else
-              searchFlag := False;
-
-          searchFlag := True;
-          i := index - 1;
-          while (searchFlag) and (i >= 1) do
-            if (arr[i].value >= min) then
-            begin
-              setLength(indexes, i);
-              indexes[len - 1] := i;
-              Dec(i);
-              Inc(counter);
-              Inc(len);
-            end
-            else
-              searchFlag := False;
-
-          searchFlag := False;
-        end;
+        writeln('(index: ', indexes[i], ', value: ', arr[indexes[i]].value,
+          ', name: ', arr[indexes[i]].name, ', counter: ', counter, ')');
       end;
-    end;
-  end;
 
-  for i := 0 to len - 2 do
-  begin
-    writeln('(index: ', indexes[i], ', value: ', arr[indexes[i]].value,
-      ', name: ', arr[indexes[i]].name, ', counter: ', counter, ')');
+      searchFlag := False;
+    end;
   end;
 
   writeln('Press Enter to exit...');
