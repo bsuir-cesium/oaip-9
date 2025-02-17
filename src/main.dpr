@@ -256,58 +256,85 @@ begin
   Sort(arr, True);
   PrintArray(arr);
 
-  searchFlag := True;
-  while searchFlag do
+  write('Enter search string: ');
+  readln(searchString);
+
+  counter := 0;
+  index := BinSearch(arr, searchString, 1, len_array, counter, True);
+  writeln('BinarySearch result:');
+  if (index = -1) then
+    writeln('Not found')
+  else
   begin
-    write('Enter search string: ');
-    readln(searchString);
-    counter := 0;
-    index := BinSearch(arr, searchString, 1, len_array, counter, True);
-    if (index = -1) then
-      writeln('Not found, try again')
-    else
-    begin
-      writeln('(index: ', index, ', value: ', arr[index].value, ', name: ',
-        arr[index].name, ', counter: ', counter, ')');
-      searchFlag := False;
-    end;
+    writeln('index: ', index, ', value: ', arr[index].value, ', name: ',
+      arr[index].name, ', counter: ', counter, '');
   end;
+  writeln;
+
+  counter := 0;
+  index := BlockSearch(arr, searchString, 1, len_array, counter, True);
+  writeln('BlockSearch result:');
+  if (index = -1) then
+    writeln('Not found')
+  else
+  begin
+    writeln('index: ', index, ', value: ', arr[index].value, ', name: ',
+      arr[index].name, ', counter: ', counter, '');
+  end;
+  writeln;
 
   writeln('Press Enter...');
   readln;
+
 
   Sort(arr, False);
   PrintArray(arr);
 
-  searchFlag := True;
-  while searchFlag do
+  write('Enter search value: ');
+  readln(searchValue);
+
+  counter := 0;
+  index := BinSearch(arr, searchValue, 1, len_array, counter, False);
+  writeln('BinarySearch result:');
+  if (index = -1) then
   begin
-    write('Enter search value: ');
-    readln(searchValue);
-    index := BinSearch(arr, searchValue, 1, len_array, counter, False);
+    writeln('Not found, try again')
+  end
+  else
+  begin
+    GetNearIndexes(arr, index, searchValue, searchValue, indexes, len, counter);
 
-    if (index = -1) then
+    for i := 0 to len - 1 do
     begin
-      writeln('Not found, try again')
-    end
-    else
-    begin
-      GetNearIndexes(arr, index, searchValue, searchValue, indexes, len, counter);
-
-      for i := 0 to len - 1 do
-      begin
-        writeln('(index: ', indexes[i], ', value: ', arr[indexes[i]].value,
-        ', name: ', arr[indexes[i]].name, ', counter: ', counter, ')');
-      end;
-
-      searchFlag := False;
+      writeln('index: ', indexes[i], ', value: ', arr[indexes[i]].value,
+        ', name: ', arr[indexes[i]].name);
     end;
+    writeln('counter: ', counter);
+  end;
+  writeln;
+
+  counter := 0;
+  index := BlockSearch(arr, searchValue, 1, len_array, counter, False);
+  writeln('BlockSearch result:');
+  if (index = -1) then
+  begin
+    writeln('Not found, try again')
+  end
+  else
+  begin
+    GetNearIndexes(arr, index, searchValue, searchValue, indexes, len, counter);
+
+    for i := 0 to len - 1 do
+    begin
+      writeln('index: ', indexes[i], ', value: ', arr[indexes[i]].value,
+        ', name: ', arr[indexes[i]].name);
+    end;
+    writeln('counter: ', counter);
   end;
 
-//  index := BlockSearch(arr, 300, 1, len_array, counter, False);
-//  writeln('BlockSearch: ', index);
   writeln('Press Enter...');
   readln;
+
 
   searchFlag := True;
   while searchFlag do
@@ -321,14 +348,32 @@ begin
       writeln('Enter valid values!')
     else
     begin
+      writeln('BinarySearch result:');
+      counter := 0;
+      { TODO: loop from min to max}
       index := BinSearch(arr, min, 1, len_array, counter, False);
+
       GetNearIndexes(arr, index, min, max, indexes, len, counter);
 
       for i := 0 to len - 1 do
       begin
-        writeln('(index: ', indexes[i], ', value: ', arr[indexes[i]].value,
-          ', name: ', arr[indexes[i]].name, ', counter: ', counter, ')');
+        writeln('index: ', indexes[i], ', value: ', arr[indexes[i]].value,
+          ', name: ', arr[indexes[i]].name);
       end;
+      writeln('counter: ', counter);
+      writeln;
+
+      writeln('BlockSearch result:');
+      counter := 0;
+      index := BlockSearch(arr, min, 1, len_array, counter, False);
+      GetNearIndexes(arr, index, min, max, indexes, len, counter);
+
+      for i := 0 to len - 1 do
+      begin
+        writeln('index: ', indexes[i], ', value: ', arr[indexes[i]].value,
+          ', name: ', arr[indexes[i]].name);
+      end;
+      writeln('counter: ', counter);
 
       searchFlag := False;
     end;
