@@ -13,6 +13,7 @@ const
 
 type
   TString = string[len_name];
+
   TRecord = Record
     value: integer;
     name: TString;
@@ -75,9 +76,8 @@ begin
   end;
 end;
 
-function BinSearch(const arr: TArr; const key;
-  leftIndex, rightIndex: integer; var counter: integer;
-  const byName: boolean): integer;
+function BinSearch(const arr: TArr; const key; leftIndex, rightIndex: integer;
+  var counter: integer; const byName: boolean): integer;
 var
   middleIndex: integer;
   search: boolean;
@@ -107,7 +107,8 @@ begin
     end
     else
     begin
-      if (leftIndex = rightIndex) and (arr[leftIndex].value <> integer(key)) then
+      if (leftIndex = rightIndex) and (arr[leftIndex].value <> integer(key))
+      then
         search := False
       else
       begin
@@ -126,9 +127,8 @@ begin
   end;
 end;
 
-function BlockSearch(const arr: TArr; const key;
-  leftIndex, rightIndex: integer; var counter: integer;
-  const byName: boolean): integer;
+function BlockSearch(const arr: TArr; const key; leftIndex, rightIndex: integer;
+  var counter: integer; const byName: boolean): integer;
 var
   blockSize, blockStart, blockEnd, i: integer;
   found, blockSearchFinished, linearSearchFinished: boolean;
@@ -249,7 +249,7 @@ var
   indexes: TIndexes;
   index, counter, searchValue, i, len, min, max: integer;
   searchString: String;
-  searchFlag: boolean;
+  searchFlag, founded: boolean;
 
 begin
   GetRandomArr(arr);
@@ -287,7 +287,6 @@ begin
   writeln('Press Enter...');
   readln;
 
-
   Sort(arr, False);
   PrintArray(arr);
 
@@ -299,7 +298,7 @@ begin
   writeln('BinarySearch result:');
   if (index = -1) then
   begin
-    writeln('Not found, try again')
+    writeln('Not found')
   end
   else
   begin
@@ -336,7 +335,6 @@ begin
   writeln('Press Enter...');
   readln;
 
-
   searchFlag := True;
   while searchFlag do
   begin
@@ -349,32 +347,61 @@ begin
       writeln('Enter valid values!')
     else
     begin
-      writeln('BinarySearch result:');
-      counter := 0;
-      { TODO: loop from min to max}
-      index := BinSearch(arr, min, 1, len_array, counter, False);
-
-      GetNearIndexes(arr, index, min, max, indexes, len, counter);
-
-      for i := 0 to len - 1 do
+      founded := False;
+      i := min;
+      while (not founded) and (i <= max) do
       begin
-        writeln('index: ', indexes[i], ', value: ', arr[indexes[i]].value,
-          ', name: ', arr[indexes[i]].name);
+        counter := 0;
+        index := BinSearch(arr, i, 1, len_array, counter, False);
+        if index = -1 then
+          Inc(i)
+        else
+          founded := True;
       end;
-      writeln('counter: ', counter);
+
+      writeln('BinarySearch result:');
+      if founded then
+      begin
+        GetNearIndexes(arr, index, min, max, indexes, len, counter);
+
+        for i := 0 to len - 1 do
+        begin
+          writeln('index: ', indexes[i], ', value: ', arr[indexes[i]].value,
+            ', name: ', arr[indexes[i]].name);
+        end;
+        writeln('counter: ', counter);
+      end
+      else
+        writeln('Not found');
+
       writeln;
 
-      writeln('BlockSearch result:');
-      counter := 0;
-      index := BlockSearch(arr, min, 1, len_array, counter, False);
-      GetNearIndexes(arr, index, min, max, indexes, len, counter);
-
-      for i := 0 to len - 1 do
+      founded := False;
+      i := min;
+      while (not founded) and (i <= max) do
       begin
-        writeln('index: ', indexes[i], ', value: ', arr[indexes[i]].value,
-          ', name: ', arr[indexes[i]].name);
+        counter := 0;
+        index := BlockSearch(arr, i, 1, len_array, counter, False);
+        if index = -1 then
+          Inc(i)
+        else
+          founded := True;
       end;
-      writeln('counter: ', counter);
+
+      writeln('BlockSearch result:');
+      if founded then
+      begin
+        GetNearIndexes(arr, index, min, max, indexes, len, counter);
+
+        for i := 0 to len - 1 do
+        begin
+          writeln('index: ', indexes[i], ', value: ', arr[indexes[i]].value,
+            ', name: ', arr[indexes[i]].name);
+        end;
+        writeln('counter: ', counter);
+      end
+      else
+        writeln('Not found');
 
       searchFlag := False;
     end;
