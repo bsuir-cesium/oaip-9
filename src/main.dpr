@@ -12,9 +12,10 @@ const
   random_range = 326;
 
 type
+  TString = string[len_name];
   TRecord = Record
     value: integer;
-    name: string[len_name];
+    name: TString;
   end;
 
   TArr = array [1 .. len_array] of TRecord;
@@ -74,7 +75,7 @@ begin
   end;
 end;
 
-function BinSearch(const arr: TArr; const key: Variant;
+function BinSearch(const arr: TArr; const key;
   leftIndex, rightIndex: integer; var counter: integer;
   const byName: boolean): integer;
 var
@@ -88,17 +89,17 @@ begin
     counter := counter + 1;
     if byName then
     begin
-      if (leftIndex = rightIndex) and (arr[leftIndex].name <> key) then
+      if (leftIndex = rightIndex) and (arr[leftIndex].name <> String(key)) then
         search := False
       else
       begin
         middleIndex := (leftIndex + rightIndex) div 2;
-        if arr[middleIndex].name = key then
+        if arr[middleIndex].name = String(key) then
         begin
           Result := middleIndex;
           search := False;
         end
-        else if arr[middleIndex].name < key then
+        else if arr[middleIndex].name < String(key) then
           leftIndex := middleIndex + 1
         else
           rightIndex := middleIndex;
@@ -106,17 +107,17 @@ begin
     end
     else
     begin
-      if (leftIndex = rightIndex) and (arr[leftIndex].value <> key) then
+      if (leftIndex = rightIndex) and (arr[leftIndex].value <> integer(key)) then
         search := False
       else
       begin
         middleIndex := (leftIndex + rightIndex) div 2;
-        if arr[middleIndex].value = key then
+        if arr[middleIndex].value = integer(key) then
         begin
           Result := middleIndex;
           search := False;
         end
-        else if arr[middleIndex].value < key then
+        else if arr[middleIndex].value < integer(key) then
           leftIndex := middleIndex + 1
         else
           rightIndex := middleIndex;
@@ -125,7 +126,7 @@ begin
   end;
 end;
 
-function BlockSearch(const arr: TArr; const key: Variant;
+function BlockSearch(const arr: TArr; const key;
   leftIndex, rightIndex: integer; var counter: integer;
   const byName: boolean): integer;
 var
@@ -151,14 +152,14 @@ begin
 
     if byName then
     begin
-      if arr[blockEnd].name >= key then
+      if arr[blockEnd].name >= String(key) then
       begin
         i := blockStart;
         linearSearchFinished := False;
         while (i <= blockEnd) and not linearSearchFinished do
         begin
           Inc(counter);
-          if arr[i].name = key then
+          if arr[i].name = String(key) then
           begin
             Result := i;
             found := True;
@@ -174,14 +175,14 @@ begin
     end
     else
     begin
-      if arr[blockEnd].value >= key then
+      if arr[blockEnd].value >= integer(key) then
       begin
         i := blockStart;
         linearSearchFinished := False;
         while (i <= blockEnd) and not linearSearchFinished do
         begin
           Inc(counter);
-          if arr[i].value = key then
+          if arr[i].value = integer(key) then
           begin
             Result := i;
             found := True;
@@ -247,7 +248,7 @@ var
   arr: TArr;
   indexes: TIndexes;
   index, counter, searchValue, i, len, min, max: integer;
-  searchString: string;
+  searchString: String;
   searchFlag: boolean;
 
 begin
