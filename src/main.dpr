@@ -96,7 +96,7 @@ begin
         middleIndex := (leftIndex + rightIndex) div 2;
         if arr[middleIndex].name = String(key) then
         begin
-          Result := middleIndex;
+          BinSearch := middleIndex;
           search := False;
         end
         else if arr[middleIndex].name < String(key) then
@@ -115,7 +115,7 @@ begin
         middleIndex := (leftIndex + rightIndex) div 2;
         if arr[middleIndex].value = integer(key) then
         begin
-          Result := middleIndex;
+          BinSearch := middleIndex;
           search := False;
         end
         else if arr[middleIndex].value < integer(key) then
@@ -133,7 +133,7 @@ var
   blockSize, blockStart, blockEnd, i: integer;
   found, blockSearchFinished, linearSearchFinished: boolean;
 begin
-  Result := -1;
+  BlockSearch := -1;
   counter := 0;
   found := False;
   blockSearchFinished := False;
@@ -161,7 +161,7 @@ begin
           Inc(counter);
           if arr[i].name = String(key) then
           begin
-            Result := i;
+            BlockSearch := i;
             found := True;
             linearSearchFinished := True;
             blockSearchFinished := True;
@@ -184,7 +184,7 @@ begin
           Inc(counter);
           if arr[i].value = integer(key) then
           begin
-            Result := i;
+            BlockSearch := i;
             found := True;
             linearSearchFinished := True;
             blockSearchFinished := True;
