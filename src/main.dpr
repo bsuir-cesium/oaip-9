@@ -1,4 +1,4 @@
-program main;
+ï»¿program main;
 
 // {$mode DELPHI}
 {$APPTYPE CONSOLE}
@@ -130,78 +130,35 @@ end;
 function BlockSearch(const arr: TArr; const key; leftIndex, rightIndex: integer;
   var counter: integer; const byName: boolean): integer;
 var
-  blockSize, blockStart, blockEnd, i: integer;
-  found, blockSearchFinished, linearSearchFinished: boolean;
+  blockSize, blockStart, blockEnd, i, index: integer;
+  search: boolean;
 begin
-  BlockSearch := -1;
-  counter := 0;
-  found := False;
-  blockSearchFinished := False;
-  linearSearchFinished := False;
+  index := -1;
+  search := True;
 
-  blockSize := Trunc(Sqrt(rightIndex - leftIndex + 1));
-
+  blockSize := trunc(sqrt(rightIndex - leftIndex + 1));
   blockStart := leftIndex;
-  while (blockStart <= rightIndex) and not blockSearchFinished do
+  blockEnd := blockStart + blockSize;
+
+  if blockEnd > rightIndex then
+    blockEnd := rightIndex;
+
+  while (leftIndex + blockSize < rightIndex) and search do
   begin
-    blockEnd := blockStart + blockSize - 1;
-    if blockEnd > rightIndex then
-      blockEnd := rightIndex;
-
     Inc(counter);
-
-    if byName then
+    if arr[leftIndex + blockSize].name >= string(key) then
     begin
-      if arr[blockEnd].name >= String(key) then
-      begin
-        i := blockStart;
-        linearSearchFinished := False;
-        while (i <= blockEnd) and not linearSearchFinished do
-        begin
-          Inc(counter);
-          if arr[i].name = String(key) then
-          begin
-            BlockSearch := i;
-            found := True;
-            linearSearchFinished := True;
-            blockSearchFinished := True;
-          end
-          else
-            Inc(i);
-        end;
-        if not found then
-          blockSearchFinished := True;
-      end;
+      if arr[leftIndex + blockSize].name = string(key) then
+        index := leftIndex + blockSize
+      else
+        index := BlockSearch(arr, key, leftIndex,  blockEnd, counter, byName);
+      search := False;
     end
     else
-    begin
-      if arr[blockEnd].value >= integer(key) then
-      begin
-        i := blockStart;
-        linearSearchFinished := False;
-        while (i <= blockEnd) and not linearSearchFinished do
-        begin
-          Inc(counter);
-          if arr[i].value = integer(key) then
-          begin
-            BlockSearch := i;
-            found := True;
-            linearSearchFinished := True;
-            blockSearchFinished := True;
-          end
-          else
-            Inc(i);
-        end;
-        if not found then
-          blockSearchFinished := True;
-      end;
-    end;
-
-    if not blockSearchFinished then
-    begin
-      blockStart := blockEnd + 1;
-    end;
+      Inc(leftIndex, blockSize);
   end;
+
+  BlockSearch := index;
 end;
 
 procedure GetNearIndexes(const arr: TArr; const index, min, max: integer;
@@ -247,7 +204,8 @@ end;
 var
   arr: TArr;
   indexes: TIndexes;
-  indexBin, indexBlock, counterBin, counterBlock, searchValue, i, len, min, max: integer;
+  indexBin, indexBlock, counterBin, counterBlock, searchValue, i, len, min,
+    max: integer;
   searchString: String;
   searchFlag, founded: boolean;
 
@@ -264,27 +222,31 @@ begin
   indexBin := BinSearch(arr, searchString, 1, len_array, counterBin, True);
 
   counterBlock := 0;
-  indexBlock := BlockSearch(arr, searchString, 1, len_array, counterBlock, True);
-
+  indexBlock := BlockSearch(arr, searchString, 1, len_array,
+    counterBlock, True);
 
   writeln('_________________________________________________________________________');
   writeln('|             |            |            |               |               |');
-  writeln('|             |   Èíäåêñ   |  Çíà÷åíèå  |      Èìÿ      |   Îáðàùåíèÿ   |');
+  writeln('|             |   Ð˜Ð½Ð´ÐµÐºÑ   |  Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ  |      Ð˜Ð¼Ñ      |   ÐžÐ±Ñ€Ð°Ñ‰ÐµÐ½Ð¸Ñ   |');
   writeln('|_____________|____________|____________|_______________|_______________|');
   writeln('|             |            |            |               |               |');
   if (indexBin = -1) then
-    writeln('|   Áèíàðíûé  |      -     |      -     |        -      |        -      |')
+    writeln('|   Ð‘Ð¸Ð½Ð°Ñ€Ð½Ñ‹Ð¹  |      -     |      -     |        -      |        -      |')
   else
   begin
-    writeln('|   Áèíàðíûé  |    ', indexBin:4, '    |    ', arr[indexBin].value:3, '     |   ', arr[indexBin].name:10, '  |     ', counterBin:5, '     |');
+    writeln('|   Ð‘Ð¸Ð½Ð°Ñ€Ð½Ñ‹Ð¹  |    ', indexBin:4, '    |    ', arr[indexBin].value
+      :3, '     |   ', arr[indexBin].name:10, '  |     ', counterBin:5,
+      '     |');
   end;
   writeln('|_____________|____________|____________|_______________|_______________|');
   writeln('|             |            |            |               |               |');
   if (indexBlock = -1) then
-    writeln('|   Áëî÷íûé   |      -     |      -     |        -      |        -      |')
+    writeln('|   Ð‘Ð»Ð¾Ñ‡Ð½Ñ‹Ð¹   |      -     |      -     |        -      |        -      |')
   else
   begin
-    writeln('|   Áëî÷íûé   |    ', indexBlock:4, '    |    ', arr[indexBlock].value:3, '     |   ', arr[indexBlock].name:10, '  |     ', counterBlock:5, '     |');
+    writeln('|   Ð‘Ð»Ð¾Ñ‡Ð½Ñ‹Ð¹   |    ', indexBlock:4, '    |    ',
+      arr[indexBlock].value:3, '     |   ', arr[indexBlock].name:10, '  |     ',
+      counterBlock:5, '     |');
   end;
   writeln('|_____________|____________|____________|_______________|_______________|');
   writeln('Press Enter...');
@@ -300,46 +262,57 @@ begin
   indexBin := BinSearch(arr, searchValue, 1, len_array, counterBin, False);
   writeln('_________________________________________________________________________');
   writeln('|             |            |            |               |               |');
-  writeln('|             |   Èíäåêñ   |  Çíà÷åíèå  |      Èìÿ      |   Îáðàùåíèÿ   |');
+  writeln('|             |   Ð˜Ð½Ð´ÐµÐºÑ   |  Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ  |      Ð˜Ð¼Ñ      |   ÐžÐ±Ñ€Ð°Ñ‰ÐµÐ½Ð¸Ñ   |');
   writeln('|_____________|____________|____________|_______________|_______________|');
   if (indexBin = -1) then
   begin
     writeln('|             |            |            |               |               |');
-    writeln('|   Áèíàðíûé  |      -     |      -     |        -      |        -      |');
+    writeln('|   Ð‘Ð¸Ð½Ð°Ñ€Ð½Ñ‹Ð¹  |      -     |      -     |        -      |        -      |');
   end
   else
   begin
-    GetNearIndexes(arr, indexBin, searchValue, searchValue, indexes, len, counterBin);
+    GetNearIndexes(arr, indexBin, searchValue, searchValue, indexes, len,
+      counterBin);
 
     for i := 0 to len - 1 do
     begin
       writeln('|             |            |            |               |               |');
       if i = 0 then
-        writeln('|   Áèíàðíûé  |    ', indexes[i]:4, '    |    ', arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10, '  |     ', counterBin:5, '     |')
+        writeln('|   Ð‘Ð¸Ð½Ð°Ñ€Ð½Ñ‹Ð¹  |    ', indexes[i]:4, '    |    ',
+          arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10,
+          '  |     ', counterBin:5, '     |')
       else
-        writeln('|             |    ', indexes[i]:4, '    |    ', arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10, '  |               |');
+        writeln('|             |    ', indexes[i]:4, '    |    ',
+          arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10,
+          '  |               |');
     end;
   end;
   writeln('|_____________|____________|____________|_______________|_______________|');
 
   counterBlock := 0;
-  indexBlock := BlockSearch(arr, searchValue, 1, len_array, counterBlock, False);
+  indexBlock := BlockSearch(arr, searchValue, 1, len_array,
+    counterBlock, False);
   if (indexBlock = -1) then
   begin
     writeln('|             |            |            |               |               |');
-    writeln('|   Áëî÷íûé   |      -     |      -     |        -      |        -      |');
+    writeln('|   Ð‘Ð»Ð¾Ñ‡Ð½Ñ‹Ð¹   |      -     |      -     |        -      |        -      |');
   end
   else
   begin
-    GetNearIndexes(arr, indexBlock, searchValue, searchValue, indexes, len, counterBlock);
+    GetNearIndexes(arr, indexBlock, searchValue, searchValue, indexes, len,
+      counterBlock);
 
     for i := 0 to len - 1 do
     begin
       writeln('|             |            |            |               |               |');
       if i = 0 then
-        writeln('|   Áëî÷íûé   |    ', indexes[i]:4, '    |    ', arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10, '  |     ', counterBlock:5, '     |')
+        writeln('|   Ð‘Ð»Ð¾Ñ‡Ð½Ñ‹Ð¹   |    ', indexes[i]:4, '    |    ',
+          arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10,
+          '  |     ', counterBlock:5, '     |')
       else
-        writeln('|             |    ', indexes[i]:4, '    |    ', arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10, '  |               |');
+        writeln('|             |    ', indexes[i]:4, '    |    ',
+          arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10,
+          '  |               |');
     end;
   end;
   writeln('|_____________|____________|____________|_______________|_______________|');
@@ -361,7 +334,7 @@ begin
     begin
       writeln('_________________________________________________________________________');
       writeln('|             |            |            |               |               |');
-      writeln('|             |   Èíäåêñ   |  Çíà÷åíèå  |      Èìÿ      |   Îáðàùåíèÿ   |');
+      writeln('|             |   Ð˜Ð½Ð´ÐµÐºÑ   |  Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ  |      Ð˜Ð¼Ñ      |   ÐžÐ±Ñ€Ð°Ñ‰ÐµÐ½Ð¸Ñ   |');
       writeln('|_____________|____________|____________|_______________|_______________|');
       founded := False;
       i := min;
@@ -383,15 +356,19 @@ begin
         begin
           writeln('|             |            |            |               |               |');
           if i = 0 then
-            writeln('|   Áèíàðíûé  |    ', indexes[i]:4, '    |    ', arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10, '  |     ', counterBin:5, '     |')
+            writeln('|   Ð‘Ð¸Ð½Ð°Ñ€Ð½Ñ‹Ð¹  |    ', indexes[i]:4, '    |    ',
+              arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10,
+              '  |     ', counterBin:5, '     |')
           else
-            writeln('|             |    ', indexes[i]:4, '    |    ', arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10, '  |               |');
+            writeln('|             |    ', indexes[i]:4, '    |    ',
+              arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10,
+              '  |               |');
         end;
       end
       else
       begin
         writeln('|             |            |            |               |               |');
-        writeln('|   Áèíàðíûé  |      -     |      -     |        -      |        -      |');
+        writeln('|   Ð‘Ð¸Ð½Ð°Ñ€Ð½Ñ‹Ð¹  |      -     |      -     |        -      |        -      |');
       end;
       writeln('|_____________|____________|____________|_______________|_______________|');
 
@@ -415,15 +392,19 @@ begin
         begin
           writeln('|             |            |            |               |               |');
           if i = 0 then
-            writeln('|   Áëî÷íûé   |    ', indexes[i]:4, '    |    ', arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10, '  |     ', counterBlock:5, '     |')
+            writeln('|   Ð‘Ð»Ð¾Ñ‡Ð½Ñ‹Ð¹   |    ', indexes[i]:4, '    |    ',
+              arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10,
+              '  |     ', counterBlock:5, '     |')
           else
-            writeln('|             |    ', indexes[i]:4, '    |    ', arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10, '  |               |');
+            writeln('|             |    ', indexes[i]:4, '    |    ',
+              arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10,
+              '  |               |');
         end;
       end
       else
       begin
         writeln('|             |            |            |               |               |');
-        writeln('|   Áëî÷íûé   |      -     |      -     |        -      |        -      |');
+        writeln('|   Ð‘Ð»Ð¾Ñ‡Ð½Ñ‹Ð¹   |      -     |      -     |        -      |        -      |');
       end;
       writeln('|_____________|____________|____________|_______________|_______________|');
 
