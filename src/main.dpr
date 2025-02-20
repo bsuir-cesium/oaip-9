@@ -247,7 +247,7 @@ end;
 var
   arr: TArr;
   indexes: TIndexes;
-  index, counter, searchValue, i, len, min, max: integer;
+  indexBin, indexBlock, counterBin, counterBlock, searchValue, i, len, min, max: integer;
   searchString: String;
   searchFlag, founded: boolean;
 
@@ -260,30 +260,33 @@ begin
   write('Enter search string: ');
   readln(searchString);
 
-  counter := 0;
-  index := BinSearch(arr, searchString, 1, len_array, counter, True);
-  writeln('BinarySearch result:');
-  if (index = -1) then
-    writeln('Not found')
+  counterBin := 0;
+  indexBin := BinSearch(arr, searchString, 1, len_array, counterBin, True);
+
+  counterBlock := 0;
+  indexBlock := BlockSearch(arr, searchString, 1, len_array, counterBlock, True);
+
+
+  writeln('_________________________________________________________________________');
+  writeln('|             |            |            |               |               |');
+  writeln('|             |   Индекс   |  Значение  |      Имя      |   Обращения   |');
+  writeln('|_____________|____________|____________|_______________|_______________|');
+  writeln('|             |            |            |               |               |');
+  if (indexBin = -1) then
+    writeln('|   Бинарный  |      -     |      -     |        -      |        -      |')
   else
   begin
-    writeln('index: ', index, ', value: ', arr[index].value, ', name: ',
-      arr[index].name, ', counter: ', counter, '');
+    writeln('|   Бинарный  |    ', indexBin:4, '    |    ', arr[indexBin].value:3, '     |   ', arr[indexBin].name:10, '  |     ', counterBin:5, '     |');
   end;
-  writeln;
-
-  counter := 0;
-  index := BlockSearch(arr, searchString, 1, len_array, counter, True);
-  writeln('BlockSearch result:');
-  if (index = -1) then
-    writeln('Not found')
+  writeln('|_____________|____________|____________|_______________|_______________|');
+  writeln('|             |            |            |               |               |');
+  if (indexBlock = -1) then
+    writeln('|   Блочный   |      -     |      -     |        -      |        -      |')
   else
   begin
-    writeln('index: ', index, ', value: ', arr[index].value, ', name: ',
-      arr[index].name, ', counter: ', counter, '');
+    writeln('|   Блочный   |    ', indexBlock:4, '    |    ', arr[indexBlock].value:3, '     |   ', arr[indexBlock].name:10, '  |     ', counterBlock:5, '     |');
   end;
-  writeln;
-
+  writeln('|_____________|____________|____________|_______________|_______________|');
   writeln('Press Enter...');
   readln;
 
@@ -293,44 +296,53 @@ begin
   write('Enter search value: ');
   readln(searchValue);
 
-  counter := 0;
-  index := BinSearch(arr, searchValue, 1, len_array, counter, False);
-  writeln('BinarySearch result:');
-  if (index = -1) then
+  counterBin := 0;
+  indexBin := BinSearch(arr, searchValue, 1, len_array, counterBin, False);
+  writeln('_________________________________________________________________________');
+  writeln('|             |            |            |               |               |');
+  writeln('|             |   Индекс   |  Значение  |      Имя      |   Обращения   |');
+  writeln('|_____________|____________|____________|_______________|_______________|');
+  if (indexBin = -1) then
   begin
-    writeln('Not found')
+    writeln('|             |            |            |               |               |');
+    writeln('|   Бинарный  |      -     |      -     |        -      |        -      |');
   end
   else
   begin
-    GetNearIndexes(arr, index, searchValue, searchValue, indexes, len, counter);
+    GetNearIndexes(arr, indexBin, searchValue, searchValue, indexes, len, counterBin);
 
     for i := 0 to len - 1 do
     begin
-      writeln('index: ', indexes[i], ', value: ', arr[indexes[i]].value,
-        ', name: ', arr[indexes[i]].name);
+      writeln('|             |            |            |               |               |');
+      if i = 0 then
+        writeln('|   Бинарный  |    ', indexes[i]:4, '    |    ', arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10, '  |     ', counterBin:5, '     |')
+      else
+        writeln('|             |    ', indexes[i]:4, '    |    ', arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10, '  |               |');
     end;
-    writeln('counter: ', counter);
   end;
-  writeln;
+  writeln('|_____________|____________|____________|_______________|_______________|');
 
-  counter := 0;
-  index := BlockSearch(arr, searchValue, 1, len_array, counter, False);
-  writeln('BlockSearch result:');
-  if (index = -1) then
+  counterBlock := 0;
+  indexBlock := BlockSearch(arr, searchValue, 1, len_array, counterBlock, False);
+  if (indexBlock = -1) then
   begin
-    writeln('Not found, try again')
+    writeln('|             |            |            |               |               |');
+    writeln('|   Блочный   |      -     |      -     |        -      |        -      |');
   end
   else
   begin
-    GetNearIndexes(arr, index, searchValue, searchValue, indexes, len, counter);
+    GetNearIndexes(arr, indexBlock, searchValue, searchValue, indexes, len, counterBlock);
 
     for i := 0 to len - 1 do
     begin
-      writeln('index: ', indexes[i], ', value: ', arr[indexes[i]].value,
-        ', name: ', arr[indexes[i]].name);
+      writeln('|             |            |            |               |               |');
+      if i = 0 then
+        writeln('|   Блочный   |    ', indexes[i]:4, '    |    ', arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10, '  |     ', counterBlock:5, '     |')
+      else
+        writeln('|             |    ', indexes[i]:4, '    |    ', arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10, '  |               |');
     end;
-    writeln('counter: ', counter);
   end;
+  writeln('|_____________|____________|____________|_______________|_______________|');
 
   writeln('Press Enter...');
   readln;
@@ -347,61 +359,73 @@ begin
       writeln('Enter valid values!')
     else
     begin
+      writeln('_________________________________________________________________________');
+      writeln('|             |            |            |               |               |');
+      writeln('|             |   Индекс   |  Значение  |      Имя      |   Обращения   |');
+      writeln('|_____________|____________|____________|_______________|_______________|');
       founded := False;
       i := min;
       while (not founded) and (i <= max) do
       begin
-        counter := 0;
-        index := BinSearch(arr, i, 1, len_array, counter, False);
-        if index = -1 then
+        counterBin := 0;
+        indexBin := BinSearch(arr, i, 1, len_array, counterBin, False);
+        if indexBin = -1 then
           Inc(i)
         else
           founded := True;
       end;
 
-      writeln('BinarySearch result:');
       if founded then
       begin
-        GetNearIndexes(arr, index, min, max, indexes, len, counter);
+        GetNearIndexes(arr, indexBin, min, max, indexes, len, counterBin);
 
         for i := 0 to len - 1 do
         begin
-          writeln('index: ', indexes[i], ', value: ', arr[indexes[i]].value,
-            ', name: ', arr[indexes[i]].name);
+          writeln('|             |            |            |               |               |');
+          if i = 0 then
+            writeln('|   Бинарный  |    ', indexes[i]:4, '    |    ', arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10, '  |     ', counterBin:5, '     |')
+          else
+            writeln('|             |    ', indexes[i]:4, '    |    ', arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10, '  |               |');
         end;
-        writeln('counter: ', counter);
       end
       else
-        writeln('Not found');
-
-      writeln;
+      begin
+        writeln('|             |            |            |               |               |');
+        writeln('|   Бинарный  |      -     |      -     |        -      |        -      |');
+      end;
+      writeln('|_____________|____________|____________|_______________|_______________|');
 
       founded := False;
       i := min;
       while (not founded) and (i <= max) do
       begin
-        counter := 0;
-        index := BlockSearch(arr, i, 1, len_array, counter, False);
-        if index = -1 then
+        counterBlock := 0;
+        indexBlock := BlockSearch(arr, i, 1, len_array, counterBlock, False);
+        if indexBlock = -1 then
           Inc(i)
         else
           founded := True;
       end;
 
-      writeln('BlockSearch result:');
       if founded then
       begin
-        GetNearIndexes(arr, index, min, max, indexes, len, counter);
+        GetNearIndexes(arr, indexBlock, min, max, indexes, len, counterBlock);
 
         for i := 0 to len - 1 do
         begin
-          writeln('index: ', indexes[i], ', value: ', arr[indexes[i]].value,
-            ', name: ', arr[indexes[i]].name);
+          writeln('|             |            |            |               |               |');
+          if i = 0 then
+            writeln('|   Блочный   |    ', indexes[i]:4, '    |    ', arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10, '  |     ', counterBlock:5, '     |')
+          else
+            writeln('|             |    ', indexes[i]:4, '    |    ', arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10, '  |               |');
         end;
-        writeln('counter: ', counter);
       end
       else
-        writeln('Not found');
+      begin
+        writeln('|             |            |            |               |               |');
+        writeln('|   Блочный   |      -     |      -     |        -      |        -      |');
+      end;
+      writeln('|_____________|____________|____________|_______________|_______________|');
 
       searchFlag := False;
     end;
