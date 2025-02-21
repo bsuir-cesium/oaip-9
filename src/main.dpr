@@ -20,7 +20,7 @@ type
   end;
 
   TArr = array [1 .. len_array] of TRecord;
-  TIndexes = array of integer;
+  TIndexes = array [1 .. 2] of integer;
 
 procedure GetRandomArr(var arr: TArr);
 var
@@ -131,7 +131,7 @@ function BlockSearch(var arr: TArr; const key; leftIndex, rightIndex: integer;
   var counter: integer; const byName: boolean): integer;
 var
   i, blockSize, j: integer;
-
+  firstTime: boolean;
 begin
 
   blockSize := trunc(sqrt(rightIndex));
@@ -149,10 +149,13 @@ begin
     while (blockSize <> 1) do
     begin
       Inc(counter);
+      firstTime := True;
       while ((i <= rightIndex) and ((((byName) and (arr[i].name < string(key))))
         or (((not byName) and (arr[i].value < integer(key)))))) do
       begin
-        Inc(counter);
+        if not firstTime then
+          Inc(counter);
+        firstTime := False;
         leftIndex := i + 1;
         i := i + blockSize;
         if i > rightIndex then
@@ -178,25 +181,20 @@ begin
 
 end;
 
-procedure GetNearIndexes(const arr: TArr; const index, min, max: integer;
-  var indexes: TIndexes; var len, counter: integer);
+procedure GetIndexes(const arr: TArr; const index, min, max: integer;
+  var indexes: TIndexes; var counter: integer);
 var
   i: integer;
   searchFlag: boolean;
 begin
   searchFlag := True;
-  indexes := nil;
-  len := 1;
-  setLength(indexes, len);
-  indexes[0] := index;
-
+  indexes[1] := index;
+  indexes[2] := index;
   i := index + 1;
   while (searchFlag) and (i <= len_array) do
     if (arr[i].value <= max) then
     begin
-      Inc(len);
-      setLength(indexes, len);
-      indexes[len - 1] := i;
+      indexes[2] := i;
       Inc(i);
       Inc(counter);
     end
@@ -208,9 +206,7 @@ begin
   while (searchFlag) and (i >= 1) do
     if (arr[i].value >= min) then
     begin
-      Inc(len);
-      setLength(indexes, len);
-      indexes[len - 1] := i;
+      indexes[1] := i;
       Dec(i);
       Inc(counter);
     end
@@ -288,20 +284,17 @@ begin
   end
   else
   begin
-    GetNearIndexes(arr, indexBin, searchValue, searchValue, indexes, len,
-      counterBin);
+    GetIndexes(arr, indexBin, searchValue, searchValue, indexes, counterBin);
 
-    for i := 0 to len - 1 do
+    for i := indexes[1] to indexes[2] do
     begin
       writeln('|             |            |            |               |               |');
-      if i = 0 then
-        writeln('|   Бинарный  |    ', indexes[i]:4, '    |    ',
-          arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10,
-          '  |     ', counterBin:5, '     |')
+      if i = indexes[1] then
+        writeln('|   Бинарный  |    ', i:4, '    |    ', arr[i].value:3,
+          '     |   ', arr[i].name:10, '  |     ', counterBin:5, '     |')
       else
-        writeln('|             |    ', indexes[i]:4, '    |    ',
-          arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10,
-          '  |               |');
+        writeln('|             |    ', i:4, '    |    ', arr[i].value:3,
+          '     |   ', arr[i].name:10, '  |               |');
     end;
   end;
   writeln('|_____________|____________|____________|_______________|_______________|');
@@ -316,20 +309,18 @@ begin
   end
   else
   begin
-    GetNearIndexes(arr, indexBlock, searchValue, searchValue, indexes, len,
+    GetIndexes(arr, indexBlock, searchValue, searchValue, indexes,
       counterBlock);
 
-    for i := 0 to len - 1 do
+    for i := indexes[1] to indexes[2] do
     begin
       writeln('|             |            |            |               |               |');
-      if i = 0 then
-        writeln('|   Блочный   |    ', indexes[i]:4, '    |    ',
-          arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10,
-          '  |     ', counterBlock:5, '     |')
+      if i = indexes[1] then
+        writeln('|   Блочный   |    ', i:4, '    |    ', arr[i].value:3,
+          '     |   ', arr[i].name:10, '  |     ', counterBlock:5, '     |')
       else
-        writeln('|             |    ', indexes[i]:4, '    |    ',
-          arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10,
-          '  |               |');
+        writeln('|             |    ', i:4, '    |    ', arr[i].value:3,
+          '     |   ', arr[i].name:10, '  |               |');
     end;
   end;
   writeln('|_____________|____________|____________|_______________|_______________|');
@@ -344,7 +335,7 @@ begin
     readln(min);
     write('Enter max board: ');
     readln(max);
-    if (min > max) or (min = max) or (min < 1) or (max < 1) or
+    if (min > max) or (min = max) or (min < 0) or (max < 1) or
       (min > random_range) or (max > random_range) then
       writeln('Enter valid values!')
     else
@@ -367,19 +358,17 @@ begin
 
       if founded then
       begin
-        GetNearIndexes(arr, indexBin, min, max, indexes, len, counterBin);
+        GetIndexes(arr, indexBin, min, max, indexes, counterBin);
 
-        for i := 0 to len - 1 do
+        for i := indexes[1] to indexes[2] do
         begin
           writeln('|             |            |            |               |               |');
-          if i = 0 then
-            writeln('|   Бинарный  |    ', indexes[i]:4, '    |    ',
-              arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10,
-              '  |     ', counterBin:5, '     |')
+          if i = indexes[1] then
+            writeln('|   Бинарный  |    ', i:4, '    |    ', arr[i].value:3,
+              '     |   ', arr[i].name:10, '  |     ', counterBin:5, '     |')
           else
-            writeln('|             |    ', indexes[i]:4, '    |    ',
-              arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10,
-              '  |               |');
+            writeln('|             |    ', i:4, '    |    ', arr[i].value:3,
+              '     |   ', arr[i].name:10, '  |               |');
         end;
       end
       else
@@ -403,19 +392,17 @@ begin
 
       if founded then
       begin
-        GetNearIndexes(arr, indexBlock, min, max, indexes, len, counterBlock);
+        GetIndexes(arr, indexBlock, min, max, indexes, counterBlock);
 
-        for i := 0 to len - 1 do
+        for i := indexes[1] to indexes[2] do
         begin
           writeln('|             |            |            |               |               |');
-          if i = 0 then
-            writeln('|   Блочный   |    ', indexes[i]:4, '    |    ',
-              arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10,
-              '  |     ', counterBlock:5, '     |')
+          if i = indexes[1] then
+            writeln('|   Блочный   |    ', i:4, '    |    ', arr[i].value:3,
+              '     |   ', arr[i].name:10, '  |     ', counterBlock:5, '     |')
           else
-            writeln('|             |    ', indexes[i]:4, '    |    ',
-              arr[indexes[i]].value:3, '     |   ', arr[indexes[i]].name:10,
-              '  |               |');
+            writeln('|             |    ', i:4, '    |    ', arr[i].value:3,
+              '     |   ', arr[i].name:10, '  |               |');
         end;
       end
       else
