@@ -127,38 +127,55 @@ begin
   end;
 end;
 
-function BlockSearch(const arr: TArr; const key; leftIndex, rightIndex: integer;
+function BlockSearch(var arr: TArr; const key; leftIndex, rightIndex: integer;
   var counter: integer; const byName: boolean): integer;
 var
-  blockSize, blockStart, blockEnd, i, index: integer;
-  search: boolean;
+  i, blockSize, j: integer;
+
 begin
-  index := -1;
-  search := True;
 
-  blockSize := trunc(sqrt(rightIndex - leftIndex + 1));
-  blockStart := leftIndex;
-  blockEnd := blockStart + blockSize;
+  blockSize := trunc(sqrt(rightIndex));
+  i := blockSize;
 
-  if blockEnd > rightIndex then
-    blockEnd := rightIndex;
-
-  while (leftIndex + blockSize < rightIndex) and search do
+  if ((byName) and ((arr[leftIndex].name > string(key)) or
+    (arr[rightIndex].name < string(key)))) or
+    ((not byName) and ((arr[leftIndex].value > integer(key)) or
+    (arr[rightIndex].value < integer(key)))) then
   begin
-    Inc(counter);
-    if arr[leftIndex + blockSize].name >= string(key) then
+    BlockSearch := -1;
+  end
+  else
+  begin
+    while (blockSize <> 1) do
     begin
-      if arr[leftIndex + blockSize].name = string(key) then
-        index := leftIndex + blockSize
-      else
-        index := BlockSearch(arr, key, leftIndex,  blockEnd, counter, byName);
-      search := False;
-    end
-    else
-      Inc(leftIndex, blockSize);
+      Inc(counter);
+      while ((i <= rightIndex) and ((((byName) and (arr[i].name < string(key))))
+        or (((not byName) and (arr[i].value < integer(key)))))) do
+      begin
+        Inc(counter);
+        leftIndex := i + 1;
+        i := i + blockSize;
+        if i > rightIndex then
+          i := rightIndex;
+      end;
+      rightIndex := i;
+      blockSize := trunc(sqrt(rightIndex - leftIndex + 1));
+      i := leftIndex + blockSize - 1;
+    end;
+
+    for j := leftIndex to rightIndex do
+    begin
+      Inc(counter);
+      if (((byName) and (arr[j].name = string(key))) or
+        ((not byName) and (arr[j].value = integer(key)))) then
+      begin
+        i := j;
+      end;
+    end;
+
+    BlockSearch := i;
   end;
 
-  BlockSearch := index;
 end;
 
 procedure GetNearIndexes(const arr: TArr; const index, min, max: integer;
