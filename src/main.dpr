@@ -248,7 +248,7 @@ begin
   else
   begin
     writeln('|   Бинарный  |    ', indexBin:4, '    |    ', arr[indexBin].value
-      :3, '     |   ', arr[indexBin].name:10, '  |     ', counterBin:5,
+      :3, '     |  ', arr[indexBin].name:11, '  |     ', counterBin:5,
       '     |');
   end;
   writeln('|_____________|____________|____________|_______________|_______________|');
@@ -258,7 +258,7 @@ begin
   else
   begin
     writeln('|   Блочный   |    ', indexBlock:4, '    |    ',
-      arr[indexBlock].value:3, '     |   ', arr[indexBlock].name:10, '  |     ',
+      arr[indexBlock].value:3, '     |  ', arr[indexBlock].name:11, '  |     ',
       counterBlock:5, '     |');
   end;
   writeln('|_____________|____________|____________|_______________|_______________|');
@@ -291,10 +291,10 @@ begin
       writeln('|             |            |            |               |               |');
       if i = indexes[1] then
         writeln('|   Бинарный  |    ', i:4, '    |    ', arr[i].value:3,
-          '     |   ', arr[i].name:10, '  |     ', counterBin:5, '     |')
+          '     |  ', arr[i].name:11, '  |     ', counterBin:5, '     |')
       else
         writeln('|             |    ', i:4, '    |    ', arr[i].value:3,
-          '     |   ', arr[i].name:10, '  |               |');
+          '     |  ', arr[i].name:11, '  |               |');
     end;
   end;
   writeln('|_____________|____________|____________|_______________|_______________|');
@@ -317,10 +317,10 @@ begin
       writeln('|             |            |            |               |               |');
       if i = indexes[1] then
         writeln('|   Блочный   |    ', i:4, '    |    ', arr[i].value:3,
-          '     |   ', arr[i].name:10, '  |     ', counterBlock:5, '     |')
+          '     |  ', arr[i].name:11, '  |     ', counterBlock:5, '     |')
       else
         writeln('|             |    ', i:4, '    |    ', arr[i].value:3,
-          '     |   ', arr[i].name:10, '  |               |');
+          '     |  ', arr[i].name:11, '  |               |');
     end;
   end;
   writeln('|_____________|____________|____________|_______________|_______________|');
@@ -336,7 +336,7 @@ begin
     write('Enter max board: ');
     readln(max);
     if (min > max) or (min = max) or (min < 0) or (max < 1) or
-      (min > random_range) or (max > random_range) then
+      (min >= random_range) or (max >= random_range) then
       writeln('Enter valid values!')
     else
     begin
@@ -365,10 +365,10 @@ begin
           writeln('|             |            |            |               |               |');
           if i = indexes[1] then
             writeln('|   Бинарный  |    ', i:4, '    |    ', arr[i].value:3,
-              '     |   ', arr[i].name:10, '  |     ', counterBin:5, '     |')
+              '     |  ', arr[i].name:11, '  |     ', counterBin:5, '     |')
           else
             writeln('|             |    ', i:4, '    |    ', arr[i].value:3,
-              '     |   ', arr[i].name:10, '  |               |');
+              '     |  ', arr[i].name:11, '  |               |');
         end;
       end
       else
@@ -399,10 +399,10 @@ begin
           writeln('|             |            |            |               |               |');
           if i = indexes[1] then
             writeln('|   Блочный   |    ', i:4, '    |    ', arr[i].value:3,
-              '     |   ', arr[i].name:10, '  |     ', counterBlock:5, '     |')
+              '     |  ', arr[i].name:11, '  |     ', counterBlock:5, '     |')
           else
             writeln('|             |    ', i:4, '    |    ', arr[i].value:3,
-              '     |   ', arr[i].name:10, '  |               |');
+              '     |  ', arr[i].name:11, '  |               |');
         end;
       end
       else
