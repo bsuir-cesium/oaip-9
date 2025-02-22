@@ -1,4 +1,4 @@
-﻿program main;
+program main;
 
 // {$mode DELPHI}
 {$APPTYPE CONSOLE}
@@ -87,43 +87,43 @@ begin
   while search do
   begin
     counter := counter + 1;
-    if byName then
-    begin
-      if (leftIndex = rightIndex) and (arr[leftIndex].name <> String(key)) then
+    // if byName then
+    // begin
+      if (leftIndex = rightIndex) and (((arr[leftIndex].name <> String(key)) and byName) or ((arr[leftIndex].value <> integer(key)) and not byName)) then
         search := False
       else
       begin
         middleIndex := (leftIndex + rightIndex) div 2;
-        if arr[middleIndex].name = String(key) then
+        if ((arr[middleIndex].value = integer(key)) and not byName) or ((arr[middleIndex].name = String(key)) and byName) then
         begin
           BinSearch := middleIndex;
           search := False;
         end
-        else if arr[middleIndex].name < String(key) then
+        else if ((arr[middleIndex].value < integer(key)) and not byName) or ((arr[middleIndex].name < String(key)) and byName) then
           leftIndex := middleIndex + 1
         else
           rightIndex := middleIndex;
       end;
-    end
-    else
-    begin
-      if (leftIndex = rightIndex) and (arr[leftIndex].value <> integer(key))
-      then
-        search := False
-      else
-      begin
-        middleIndex := (leftIndex + rightIndex) div 2;
-        if arr[middleIndex].value = integer(key) then
-        begin
-          BinSearch := middleIndex;
-          search := False;
-        end
-        else if arr[middleIndex].value < integer(key) then
-          leftIndex := middleIndex + 1
-        else
-          rightIndex := middleIndex;
-      end;
-    end;
+    // end
+    // else
+    // begin
+    //   if (leftIndex = rightIndex) and (arr[leftIndex].value <> integer(key))
+    //   then
+    //     search := False
+    //   else
+    //   begin
+    //     middleIndex := (leftIndex + rightIndex) div 2;
+    //     if arr[middleIndex].value = integer(key) then
+    //     begin
+    //       BinSearch := middleIndex;
+    //       search := False;
+    //     end
+    //     else if arr[middleIndex].value < integer(key) then
+    //       leftIndex := middleIndex + 1
+    //     else
+    //       rightIndex := middleIndex;
+    //   end;
+    // end;
   end;
 end;
 
@@ -217,7 +217,7 @@ end;
 var
   arr: TArr;
   indexes: TIndexes;
-  indexBin, indexBlock, counterBin, counterBlock, searchValue, i, len, min,
+  indexBin, indexBlock, counterBin, counterBlock, searchValue, i, min,
     max: integer;
   searchString: String;
   searchFlag, founded: boolean;
